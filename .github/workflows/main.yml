@@ -1,3 +1,4 @@
+
 name: Build APK
 
 on:
@@ -8,24 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y zip unzip python3 python3-pip
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y zip unzip python3 python3-pip
 
-    - name: Unzip project
-      run: unzip poker_project.zip
+      - name: Unzip project
+        run: unzip poker_project.zip
 
-    - name: Create APK
-      run: |
-        mkdir output
-        echo "Poker App APK" > output/poker-app.apk
+      - name: Create APK
+        run: |
+          mkdir output
+          echo "Poker App APK" > output/poker-app.apk
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: poker-app
-        path: output/
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: poker-app
+          path: output/
+
