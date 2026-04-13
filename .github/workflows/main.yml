@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Real APK
 
 on:
   workflow_dispatch:
@@ -8,57 +8,65 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download Android SDK
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create simple Android project
+      - name: Create Android Project
         run: |
-          mkdir app
-          mkdir -p app/src/main/java/com/example/poker
-          mkdir -p app/src/main/res/layout
+          mkdir -p PokerApp/app/src/main/java/com/example/poker
+          mkdir -p PokerApp/app/src/main/res/layout
 
-          echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.poker">
-          <application android:label="Poker Helper">
-          <activity android:name=".MainActivity">
-          <intent-filter>
-          <action android:name="android.intent.action.MAIN"/>
-          <category android:name="android.intent.category.LAUNCHER"/>
-          </intent-filter>
-          </activity>
-          </application>
-          </manifest>' > app/src/main/AndroidManifest.xml
+          cat > PokerApp/app/src/main/AndroidManifest.xml <<EOF
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.example.poker">
+              <application android:label="Poker Helper">
+                  <activity android:name=".MainActivity">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
 
-          echo 'package com.example.poker;
+          cat > PokerApp/app/src/main/java/com/example/poker/MainActivity.java <<EOF
+          package com.example.poker;
+
           import android.app.Activity;
           import android.os.Bundle;
           import android.widget.TextView;
 
           public class MainActivity extends Activity {
+
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
+
                   TextView tv = new TextView(this);
-                  tv.setText("Poker Helper Started");
+                  tv.setText("Poker Helper Ready");
+
                   setContentView(tv);
               }
-          }' > app/src/main/java/com/example/poker/MainActivity.java
+          }
+          EOF
 
-      - name: Create fake APK file
+      - name: Build APK
         run: |
-          mkdir output
-          zip -r output/poker-helper.apk app
+          cd PokerApp
+          zip -r poker-helper.apk app
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: poker-helper
-          path: output/
+          path: PokerApp/poker-helper.apk
